@@ -1,4 +1,6 @@
-ScreenReality
+Trying to make a head tracking moving window display
+
+ScreenReality https://github.com/agirault/screenReality
 =============
 
 ###### *Project for the "IFT6145 - Vision 3D" class at University of Montréal.*
