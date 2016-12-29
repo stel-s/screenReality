@@ -1,6 +1,9 @@
-Trying to make a head tracking moving window display
+Trying to make a head tracking moving window display 
+Original Code from here ( https://github.com/agirault/screenReality) 
 
-ScreenReality https://github.com/agirault/screenReality
+added SOIL to import images into OpenGL/freeGlut
+
+ScreenReality
 =============
 
 ###### *Project for the "IFT6145 - Vision 3D" class at University of Montréal.*
