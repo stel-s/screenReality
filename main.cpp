@@ -110,23 +110,23 @@ void display2()
 {
    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 glEnable(GL_DEPTH_TEST);
-  glEnable(GL_TEXTURE_2D);  // Turn on texture.
+   // Turn on texture.
       // Turn it off if you draw something without a texture.
  // Enable depth test
-//glEnable(GL_DEPTH_TEST);
+
 
 // Cull backfacing polygons
-GLdouble aspectratio = GLdouble(500) / GLdouble(200);
+// GLdouble aspectratio = GLdouble(500) / GLdouble(200);
 
-// Set the camera parameters
-gluPerspective(25.,         // Vertical FOV degrees.
-               aspectratio, // The aspect ratio.
-               10.,         // Near clipping 40/130
-               200.);       // Far clipping
+// // Set the camera parameters
+// gluPerspective(25.,         // Vertical FOV degrees.
+//                aspectratio, // The aspect ratio.
+//                10.,         // Near clipping 40/130
+//                200.);       // Far clipping
 
-// Set the camera location
-glMatrixMode(GL_MODELVIEW);
-glLoadIdentity();
+// // Set the camera location
+// glMatrixMode(GL_MODELVIEW);
+// glLoadIdentity();
 
 // gluLookAt(20., 10., 50.,    // eye x,y,z
 //           0., 0., 0.,       // center x,y,z
@@ -150,16 +150,16 @@ glEnable(GL_CULL_FACE);
    // Draw square
    glPushMatrix();  // We are in model/view mode
 
-      glTranslated(0., 0., -3.);      
+      glTranslated(0., 0., 0.);      
 
      
             
 
       glBegin(GL_POLYGON);
-         glTexCoord2d(1.0, 1.0); glVertex3d( 40.0, 40.0, 0.0);
-         glTexCoord2d(0.0, 1.0); glVertex3d(-30.0, 40.0, 0.0);
-         glTexCoord2d(0.0, 0.0); glVertex3d(-40.0,-40.0, 0.0);
-         glTexCoord2d(1.0, 0.0); glVertex3d( 40.0,-40.0, 0.0);
+         glTexCoord2d(1.0, 1.0); glVertex3d( 30.0, 30.0, 0.0);
+         glTexCoord2d(0.0, 1.0); glVertex3d(-30.0, 30.0, 0.0);
+         glTexCoord2d(0.0, 0.0); glVertex3d(-30.0,-30.0, 0.0);
+         glTexCoord2d(1.0, 0.0); glVertex3d( 30.0,-30.0, 0.0);
       glEnd();
        glPopMatrix();
     
@@ -249,30 +249,35 @@ void init()
 int width, height;
     unsigned char* image;
    // Basic image set-up
-   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  // glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   // makeimage();
  GLuint tex_2d = SOIL_load_OGL_texture
 	(
-		"img.jpg",
+		"s.jpg",
 		SOIL_LOAD_AUTO,
 		SOIL_CREATE_NEW_ID,
-		SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
+		SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y 
 	);
    // Generate a texture name and bind it to GL_TEXTURE_2D.
    // Then we no longer use texname, since GL_TEXTURE_2D is bound to it.
    // NOTE: binding a texture name is actually NOT necessary when we
    //  use only one texture, but it does not hurt.
-//    glGenTextures(1, &texname);
-//    glBindTexture(GL_TEXTURE_2D, texname);
+   glGenTextures(1, &texname);
+   glBindTexture(GL_TEXTURE_2D, tex_2d);
 
    // Set various texture parameters
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+//       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+   
+
+
    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);  // Needs OpenGL 1.1
 
-glEnable(GL_TEXTURE_2D);
+   glEnable(GL_TEXTURE_2D);
    // Create the actual texture
 //    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_width, img_height,
 //                 0, GL_RGB, GL_UNSIGNED_BYTE, image);
@@ -442,27 +447,27 @@ cv::Mat detectEyes(cv::Mat image)
         glCamY = (glCamY*0.5) + (tempY*0.5);
 
         // DISPLAY
-        if(bDisplayCam && bDisplayDetection)
-        {
-            //-- face rectangle
-            cv::rectangle(image, faces[i], 1234);
+        // if(bDisplayCam && bDisplayDetection)
+        // {
+        //     //-- face rectangle
+        //     cv::rectangle(image, faces[i], 1234);
 
-            //-- face lines
-            cv::Point leftPt( faces[i].x, faces[i].y + faces[i].height*0.37 );
-            cv::Point rightPt( faces[i].x + faces[i].width, faces[i].y + faces[i].height*0.37 );
-            cv::Point topPt( faces[i].x + faces[i].width*0.5, faces[i].y);
-            cv::Point bottomPt( faces[i].x + faces[i].width*0.5, faces[i].y + faces[i].height);
-            cv::line(image, leftPt, rightPt, cv::Scalar( 0, 0, 0 ), 1, 1, 0);
-            cv::line(image, topPt, bottomPt, cv::Scalar( 0, 0, 0 ), 1, 1, 0);
+        //     //-- face lines
+        //     cv::Point leftPt( faces[i].x, faces[i].y + faces[i].height*0.37 );
+        //     cv::Point rightPt( faces[i].x + faces[i].width, faces[i].y + faces[i].height*0.37 );
+        //     cv::Point topPt( faces[i].x + faces[i].width*0.5, faces[i].y);
+        //     cv::Point bottomPt( faces[i].x + faces[i].width*0.5, faces[i].y + faces[i].height);
+        //     cv::line(image, leftPt, rightPt, cv::Scalar( 0, 0, 0 ), 1, 1, 0);
+        //     cv::line(image, topPt, bottomPt, cv::Scalar( 0, 0, 0 ), 1, 1, 0);
 
-            //-- eyes circles
-            cv::circle(image, rightEyePt, 0.06*faces[i].width, cv::Scalar( 255, 255, 255 ), 1, 8, 0);
-            cv::circle(image, leftEyePt, 0.06*faces[i].width, cv::Scalar( 255, 255, 255 ), 1, 8, 0);
+        //     //-- eyes circles
+        //     cv::circle(image, rightEyePt, 0.06*faces[i].width, cv::Scalar( 255, 255, 255 ), 1, 8, 0);
+        //     cv::circle(image, leftEyePt, 0.06*faces[i].width, cv::Scalar( 255, 255, 255 ), 1, 8, 0);
 
-            //-- eyes line & center
-            cv::line(image, leftEyePt, rightEyePt, cv::Scalar( 0, 0, 255 ), 1, 1, 0);
-            cv::circle(image, eyeCenterPt, 2, cv::Scalar( 0, 0, 255 ), 3, 1, 0);
-        }
+        //     //-- eyes line & center
+        //     cv::line(image, leftEyePt, rightEyePt, cv::Scalar( 0, 0, 255 ), 1, 1, 0);
+        //     cv::circle(image, eyeCenterPt, 2, cv::Scalar( 0, 0, 255 ), 3, 1, 0);
+        // }
     }
     return image;
 }
@@ -506,7 +511,7 @@ void setGlCamera()
         cv::Vec3f Vb = Pb-Pe;
         cv::Vec3f Vc = Pc-Pe;
         //-- Find the distance from the eye to screen plane.
-        float d = -Va.dot(Vn);
+        float d = -Va.dot(Vn)* 2;
         //-- Find the extent of the perpendicular projection.
         float l = Va.dot(Vr) * near / d;
         float r = Vr.dot(Vb) * near / d;
@@ -561,64 +566,64 @@ void draw3dScene()
    // Draw square
   
     // BOUNDING BOX
-    if(bDisplayBox){
-        for(int i = 0; i <= 10; i++){
-            float j = (float)i/10.0;
-            //-- lines
-            drawLineToInf((2*j*cx)-cx, cy, 0.0);//top lines
-            drawLineToInf(cx, cy-(2*j*cy), 0.0);//right lines
-            drawLineToInf(cx-(2*j*cx), -cy, 0.0);//bottom lines
-            drawLineToInf(-cx, (2*j*cy)-cy, 0.0);//left lines
-            //-- frames
-            glColor3f(1.0-j,1.0-j,1.0-j);
-            if((i%2) == 0) drawFrame(-j*far);
-        }
-    }
+    // if(bDisplayBox){
+    //     for(int i = 0; i <= 10; i++){
+    //         float j = (float)i/10.0;
+    //         //-- lines
+    //         drawLineToInf((2*j*cx)-cx, cy, 0.0);//top lines
+    //         drawLineToInf(cx, cy-(2*j*cy), 0.0);//right lines
+    //         drawLineToInf(cx-(2*j*cx), -cy, 0.0);//bottom lines
+    //         drawLineToInf(-cx, (2*j*cy)-cy, 0.0);//left lines
+    //         //-- frames
+    //         glColor3f(1.0-j,1.0-j,1.0-j);
+    //         if((i%2) == 0) drawFrame(-j*far);
+    //     }
+    // }
 
-    // LIGHTING
-    glEnable(GL_LIGHTING);
-    //-- Add ambient light
-    GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; //Color (0.2, 0.2, 0.2)
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
-    //-- Add positioned light
-    GLfloat lightColor0[] = {0.5f, 0.5f, 0.5f, 1.0f}; //Color (0.5, 0.5, 0.5)
-    GLfloat lightPos0[] = {4.0f, 0.0f, 8.0f, 1.0f}; //Positioned at (4, 0, 8)
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor0);
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPos0);
-    //-- Add directed light
-    GLfloat lightColor1[] = {0.5f, 0.2f, 0.2f, 1.0f}; //Color (0.5, 0.2, 0.2)
-    GLfloat lightPos1[] = {-1.0f, 0.5f, 0.5f, 0.0f}; //Positioned at (-1, 0.5, 0.5)
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, lightColor1);
-    glLightfv(GL_LIGHT1, GL_POSITION, lightPos1);
+    // // LIGHTING
+    // glEnable(GL_LIGHTING);
+    // //-- Add ambient light
+    // GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; //Color (0.2, 0.2, 0.2)
+    // glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
+    // //-- Add positioned light
+    // GLfloat lightColor0[] = {0.5f, 0.5f, 0.5f, 1.0f}; //Color (0.5, 0.5, 0.5)
+    // GLfloat lightPos0[] = {4.0f, 0.0f, 8.0f, 1.0f}; //Positioned at (4, 0, 8)
+    // glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor0);
+    // glLightfv(GL_LIGHT0, GL_POSITION, lightPos0);
+    // //-- Add directed light
+    // GLfloat lightColor1[] = {0.5f, 0.2f, 0.2f, 1.0f}; //Color (0.5, 0.2, 0.2)
+    // GLfloat lightPos1[] = {-1.0f, 0.5f, 0.5f, 0.0f}; //Positioned at (-1, 0.5, 0.5)
+    // glLightfv(GL_LIGHT1, GL_DIFFUSE, lightColor1);
+    // glLightfv(GL_LIGHT1, GL_POSITION, lightPos1);
    
 
-    // GEOMETRY
-    //-- TeaPot
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glTranslatef(-1, -3, -10);
-        glutSolidTeapot(5);
-    glTranslatef(1, 3, 10);
-    drawLineToInf( -1, -3, -10);
-    //-- Cube 1
-    glColor3f(1.0f, 1.0f, 0.0f);
-    glTranslatef(-10, -5, 30);
-        glutSolidCube(3);
-    glTranslatef(10, 5, -30);
-    drawLineToInf(-10, -5, 30);
-    //-- Cube 2
-    glColor3f(1.0f, 0.0f, 1.0f);
-    glTranslatef(-20, 0, -40);
-        glutSolidCube(3);
-    glTranslatef(20, 0, 40);
-    drawLineToInf(-20, 0, -40);
-    //-- Cube 3
-    glColor3f(0.0f, 1.0f, 1.0f);
-    glTranslatef(5, 5, 10);
-        glutSolidCube(3);
-    glTranslatef(-5, -5, -10);
-    drawLineToInf(5, 5, 10);
+    // // GEOMETRY
+    // //-- TeaPot
+    // glColor3f(1.0f, 1.0f, 1.0f);
+    // glTranslatef(-1, -3, -10);
+    //     glutSolidTeapot(5);
+    // glTranslatef(1, 3, 10);
+    // drawLineToInf( -1, -3, -10);
+    // //-- Cube 1
+    // glColor3f(1.0f, 1.0f, 0.0f);
+    // glTranslatef(-10, -5, 30);
+    //     glutSolidCube(3);
+    // glTranslatef(10, 5, -30);
+    // drawLineToInf(-10, -5, 30);
+    // //-- Cube 2
+    // glColor3f(1.0f, 0.0f, 1.0f);
+    // glTranslatef(-20, 0, -40);
+    //     glutSolidCube(3);
+    // glTranslatef(20, 0, 40);
+    // drawLineToInf(-20, 0, -40);
+    // //-- Cube 3
+    // glColor3f(0.0f, 1.0f, 1.0f);
+    // glTranslatef(5, 5, 10);
+    //     glutSolidCube(3);
+    // glTranslatef(-5, -5, -10);
+    // drawLineToInf(5, 5, 10);
 
-    glDisable(GL_LIGHTING); //Disable lighting
+    // glDisable(GL_LIGHTING); //Disable lighting
 
    //glEnable(GL_TEXTURE_2D);  // Turn on texture.
       // Turn it off if you draw something without a texture.
@@ -663,10 +668,10 @@ void displayCam(cv::Mat camImage)
     }
 
     //-- Display image
-    glRasterPos2i(0, windowHeight-(camRatio*camImage.size().height));
-    cv::flip(camImage, camImage, 0);
-    cv::resize(camImage, camImage, cv::Size(camRatio*camWidth, camRatio*camHeight), 0, 0, cv::INTER_CUBIC);
-    glDrawPixels( camImage.size().width, camImage.size().height, GL_BGR, GL_UNSIGNED_BYTE, camImage.ptr() );
+    // glRasterPos2i(0, windowHeight-(camRatio*camImage.size().height));
+    // cv::flip(camImage, camImage, 0);
+    // cv::resize(camImage, camImage, cv::Size(camRatio*camWidth, camRatio*camHeight), 0, 0, cv::INTER_CUBIC);
+    //glDrawPixels( camImage.size().width, camImage.size().height, GL_BGR, GL_UNSIGNED_BYTE, camImage.ptr() );
 
     //-- Load matrix
     glMatrixMode(GL_PROJECTION);
