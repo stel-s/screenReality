@@ -2,10 +2,10 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
-#include <SOIL.h>
+
 #include <GL/gl.h>
 #include <GL/freeglut.h>
-
+#include <SOIL.h>
 #include <iostream>
 #include <stdio.h>
 
@@ -47,7 +47,7 @@ int camHeight;
 GLdouble glCamX;
 GLdouble glCamY;
 GLdouble glCamZ;
-
+GLuint texname; 
 /** Functions */
 void redisplay();
 using std::cerr;
@@ -77,7 +77,6 @@ const double fardist = 10.;
 GLubyte the_image[img_height][img_width][3];
    // The image
    // 3rd subscript 0 = R, 1 = G, 2 = B
-GLuint texname;  // Name for this texture
 
 
 // display
@@ -86,7 +85,7 @@ void display()
 {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-   glDisable(GL_TEXTURE_2D);  // Turn on texture.
+   glEnable(GL_TEXTURE_2D);  // Turn on texture.
       // Turn it off if you draw something without a texture.
 
    // Draw square
@@ -103,110 +102,22 @@ void display()
 
    glPopMatrix();
 
-   //glutSwapBuffers();
+   glutSwapBuffers();
 }
 
-void display2()
-{
-   //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-glEnable(GL_DEPTH_TEST);
-  glEnable(GL_TEXTURE_2D);  // Turn on texture.
-      // Turn it off if you draw something without a texture.
- // Enable depth test
-//glEnable(GL_DEPTH_TEST);
 
-// Cull backfacing polygons
-GLdouble aspectratio = GLdouble(500) / GLdouble(200);
-
-// Set the camera parameters
-gluPerspective(25.,         // Vertical FOV degrees.
-               aspectratio, // The aspect ratio.
-               10.,         // Near clipping 40/130
-               200.);       // Far clipping
-
-// Set the camera location
-glMatrixMode(GL_MODELVIEW);
-glLoadIdentity();
-
-// gluLookAt(20., 10., 50.,    // eye x,y,z
-//           0., 0., 0.,       // center x,y,z
-//           0., 1., 0.);      // Up direction
-
-//
-// Some standard parameters
-//
-glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-// Enable depth test
-glEnable(GL_DEPTH_TEST);
-// gluLookAt(2., 10., 50.,    // eye x,y,z
-//           0., 0., 0.,       // center x,y,z
-//           0., 1., 0.);      // Up direction
-// Cull backfacing polygons
-glCullFace(GL_BACK);
-glEnable(GL_CULL_FACE);
-   // Draw square
-   glPushMatrix();  // We are in model/view mode
-
-      glTranslated(0., 0., -3.);      
-
-     
-            
-
-      glBegin(GL_POLYGON);
-         glTexCoord2d(1.0, 1.0); glVertex3d( 40.0, 40.0, 0.0);
-         glTexCoord2d(0.0, 1.0); glVertex3d(-30.0, 40.0, 0.0);
-         glTexCoord2d(0.0, 0.0); glVertex3d(-40.0,-40.0, 0.0);
-         glTexCoord2d(1.0, 0.0); glVertex3d( 40.0,-40.0, 0.0);
-      glEnd();
-       glPopMatrix();
-    
-    // GEOMETRY
-    // //-- TeaPot
-    // glColor3f(1.0f, 1.0f, 1.0f);
-    // glTranslatef(-1, -3, -10);
-    //     glutSolidTeapot(5);
-    // glTranslatef(1, 3, 10);
-    
-    // //-- Cube 1
-    // glColor3f(1.0f, 1.0f, 0.0f);
-    // glTranslatef(-10, -5, 30);
-    //     glutSolidCube(3);
-    // glTranslatef(10, 5, -30);
-    
-    // //-- Cube 2
-    // glColor3f(1.0f, 0.0f, 1.0f);
-    // glTranslatef(-20, 0, -40);
-    //     glutSolidCube(3);
-    // glTranslatef(20, 0, 40);
-    
-    // //-- Cube 3
-    // glColor3f(0.0f, 1.0f, 1.0f);
-    // glTranslatef(5, 5, 10);
-    //     glutSolidCube(3);
-    // glTranslatef(-5, -5, -10);
-    
-
-    // glDisable(GL_LIGHTING); //Disable lighting
-
-  
-
-   
-}
 // reshape
 // The GLUT reshape function
-void reshape(int w, int h)
-{
-    glViewport(0, 0, w, h);
+// void reshape(int w, int h)
+// {
+//     glViewport(0, 0, w, h);
 
-   glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();
-   gluPerspective(60, double(w)/h, neardist, fardist);
+//    glMatrixMode(GL_PROJECTION);
+//    glLoadIdentity();
+//    gluPerspective(60, double(w)/h, neardist, fardist);
 
-   glMatrixMode(GL_MODELVIEW);  // Always go back to modelview mode
-}
+//    glMatrixMode(GL_MODELVIEW);  // Always go back to modelview mode
+// }
 
 
 // keyboard
@@ -235,35 +146,84 @@ void idle()
 }
 
 
+// makeimage
+// Make image in the_image
+// (Code taken without change from drawimage.cpp)
+void makeimage()
+{
+   for (int i=0; i<img_width; ++i)
+   {
+      double x = double(i)/(img_width-1);
+      for (int j=0; j<img_height; ++j)
+      {
+         double y = double(j)/(img_height-1);
+
+         the_image[j][i][0] = int(x*255)*15 % 256;
+         the_image[j][i][1] = int(y*255)*15 % 256;
+         the_image[j][i][2] = 0.75*255;
+      }
+   }
+}
 
 
 // init
 // Initializes GL states
 // Called by main
+// void init()
+// {
+//    glClearColor(1.0, 1.0, 1.0, 0.0);
+    
+//    glEnable(GL_DEPTH_TEST);
+
+//    // Texture set-up
+
+//    // Basic image set-up
+//    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+//    makeimage();
+//     int width, height;
+//     unsigned char* image;
+//     GLuint textures[2];
+
+// image = SOIL_load_image("img.png", &width, &height, 0, SOIL_LOAD_RGB);
+
+          
+
+//    // Generate a texture name and bind it to GL_TEXTURE_2D.
+//    // Then we no longer use texname, since GL_TEXTURE_2D is bound to it.
+//    // NOTE: binding a texture name is actually NOT necessary when we
+//    //  use only one texture, but it does not hurt.
+//     glGenTextures(1, &texname);
+//     glBindTexture(GL_TEXTURE_2D, texname);
+
+// //    // Set various texture parameters
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);  // Needs OpenGL 1.1
+// //    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
+// //               GL_UNSIGNED_BYTE, image);
+// //    // Create the actual texture
+//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_width, img_height,
+//                 0, GL_RGB, GL_UNSIGNED_BYTE, the_image);
+// }
 void init()
 {
    glClearColor(1.0, 1.0, 1.0, 0.0);
-   
+   glEnable(GL_DEPTH_TEST);
 
    // Texture set-up
-int width, height;
-    unsigned char* image;
+
    // Basic image set-up
    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-  // makeimage();
- GLuint tex_2d = SOIL_load_OGL_texture
-	(
-		"img.jpg",
-		SOIL_LOAD_AUTO,
-		SOIL_CREATE_NEW_ID,
-		SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
-	);
+   makeimage();
+
    // Generate a texture name and bind it to GL_TEXTURE_2D.
    // Then we no longer use texname, since GL_TEXTURE_2D is bound to it.
    // NOTE: binding a texture name is actually NOT necessary when we
    //  use only one texture, but it does not hurt.
-//    glGenTextures(1, &texname);
-//    glBindTexture(GL_TEXTURE_2D, texname);
+   glGenTextures(1, &texname);
+   glBindTexture(GL_TEXTURE_2D, texname);
 
    // Set various texture parameters
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -272,10 +232,20 @@ int width, height;
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);  // Needs OpenGL 1.1
 
-glEnable(GL_TEXTURE_2D);
    // Create the actual texture
-//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_width, img_height,
-//                 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_width, img_height,
+                0, GL_RGB, GL_UNSIGNED_BYTE, the_image);
+}
+
+void reshape(int w, int h)
+{
+    glViewport(0, 0, w, h);
+
+   glMatrixMode(GL_PROJECTION);
+   glLoadIdentity();
+   gluPerspective(60, double(w)/h, neardist, fardist);
+
+   glMatrixMode(GL_MODELVIEW);  // Always go back to modelview mode
 }
 
 
@@ -338,6 +308,7 @@ int main( int argc, char **argv )
         glViewport( 0, 0, windowWidth, windowHeight );
     }
  init();
+
    glutDisplayFunc(redisplay);
     // GUI CALLBACK FUNCTIONS
    // glutDisplayFunc( redisplay );
@@ -359,12 +330,35 @@ int main( int argc, char **argv )
  * - Creates a 3D scene with OpenGL,
  * - Render the scene and the webcam image.
  */
-void redisplay()
+ void redisplay()
 {
-     
-     // Turn on texture.
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+   glEnable(GL_TEXTURE_2D);  // Turn on texture.
       // Turn it off if you draw something without a texture.
 
+   // Draw square
+   glPushMatrix();  // We are in model/view mode
+
+      glTranslated(0., 0., -3.);      
+
+      glBegin(GL_POLYGON);
+         glTexCoord2d(1.0, 1.0); glVertex3d( 1.0, 1.0, 0.0);
+         glTexCoord2d(0.0, 1.0); glVertex3d(-1.0, 1.0, 0.0);
+         glTexCoord2d(0.0, 0.0); glVertex3d(-1.0,-1.0, 0.0);
+         glTexCoord2d(1.0, 0.0); glVertex3d( 1.0,-1.0, 0.0);
+      glEnd();
+
+   glPopMatrix();
+
+   glutSwapBuffers();
+}
+void redisplay2()
+{
+     
+   //  // Turn on texture.
+      // Turn it off if you draw something without a texture.
+glEnable(GL_TEXTURE_2D);
    // Draw square
   
 
@@ -387,7 +381,6 @@ void redisplay()
         //-- scene
         setGlCamera();
         draw3dScene();
-        display2();
         //-- cam
         if(bDisplayCam) displayCam(tempimage);
 
@@ -542,14 +535,46 @@ void setGlCamera()
         gluLookAt(glCamX, glCamY, glCamZ, 0, 0, 0, 0, 1, 0);
     }
 }
+GLfloat angle;
+ void _Timer(int value)
+{
+  /* increment angle */
+  angle++;
+
+  /* send redisplay event */
+  glutPostRedisplay();
+
+  /* call this function again in 10 milliseconds */
+  glutTimerFunc(10, _Timer, 0);
+}
 
 /**
  * @function draw3dScene
  * Draws OpenGL 3D scene
  */
+
+void draw3dScene2(){
+
+     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    
+    // glEnable(GL_TEXTURE_2D);
+    // glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    // glBindTexture(GL_TEXTURE_2D, myTextureName);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glTranslatef(-1, -3, -10);
+        glutSolidTeapot(5);
+    glTranslatef(1, 3, 10);
+    drawLineToInf( -1, -3, -10);
+ 
+    glDisable(GL_TEXTURE_2D);
+
+}
+
 void draw3dScene()
 {
-    
+      glutTimerFunc(10, _Timer, 0); /* register callback for a timer */
+
     // DISPLAY MODE
     if(bPolygonMode){
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -590,7 +615,6 @@ void draw3dScene()
     GLfloat lightPos1[] = {-1.0f, 0.5f, 0.5f, 0.0f}; //Positioned at (-1, 0.5, 0.5)
     glLightfv(GL_LIGHT1, GL_DIFFUSE, lightColor1);
     glLightfv(GL_LIGHT1, GL_POSITION, lightPos1);
-   
 
     // GEOMETRY
     //-- TeaPot
@@ -620,12 +644,8 @@ void draw3dScene()
 
     glDisable(GL_LIGHTING); //Disable lighting
 
-   //glEnable(GL_TEXTURE_2D);  // Turn on texture.
-      // Turn it off if you draw something without a texture.
- 
-   // Draw square
-  
 }
+
 
 /**
  * @function displayCam
